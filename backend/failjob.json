@@ -1,0 +1,5 @@
+{
+  "id": "failjob",
+  "command": "this_command_does_not_exist",
+  "max_retries": 2
+}

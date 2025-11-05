@@ -1,0 +1,5 @@
+{
+  "id": "urgent1",
+  "command": "echo Critical job first",
+  "priority": 10
+}

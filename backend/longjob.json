@@ -1,0 +1,6 @@
+{
+  "id": "longjob",
+  "command": "ping localhost -n 10 >nul",
+  "max_retries": 1,
+  "timeout_seconds": 3
+}
