@@ -33,24 +33,24 @@ It also includes a **FastAPI backend** and a **React + Tailwind web dashboard** 
 ---
 
 ## 🗂️ Folder Structure
+
 ```bash
 QueueCTL_flam/
-├── backend/ # FastAPI backend
-│ └── main.py # REST API (jobs, DLQ, logs)
-├── frontend/ # React + Tailwind dashboard
-│ ├── src/
-│ │ ├── components/
-│ │ │ └── JobTable.jsx
-│ │ └── App.jsx
-│ ├── package.json
-│ └── vite.config.js
-├── queuectl.py # CLI-based job manager
-├── queue.db # SQLite persistent storage
-├── logs/ # Job execution logs
+├── backend/                # FastAPI backend
+│   └── main.py            # REST API (jobs, DLQ, logs)
+├── frontend/              # React + Tailwind dashboard
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── JobTable.jsx
+│   │   └── App.jsx
+│   ├── package.json
+│   └── vite.config.js
+├── queuectl.py            # CLI-based job manager
+├── queue.db               # SQLite persistent storage
+├── logs/                  # Job execution logs
 ├── .gitignore
 └── README.md
 ```
-
 
 ---
 
@@ -62,54 +62,73 @@ QueueCTL_flam/
 git clone https://github.com/error077-ux/QueueCTL_flam.git
 cd QueueCTL_flam
 ```
+
+### 🧩 2. Setup Python Environment
+
 ```bash
 python -m venv venv
 venv\Scripts\activate     # (Windows)
+source venv/bin/activate  # (Linux/Mac)
 pip install -r requirements.txt
 ```
 
-```bash
-Run command
+### 🧩 3. Run CLI Commands
 
+```bash
+# Enqueue a job from JSON file
 python queuectl.py enqueue "@job.json"
+
+# Start 2 workers
 python queuectl.py worker start --count 2
+
+# Check system status
 python queuectl.py status
+
+# List all jobs
 python queuectl.py list
 ```
 
-# 🧩 3. Backend (FastAPI)
+### 🧩 4. Backend (FastAPI)
+
 ```bash
 cd backend
 uvicorn main:app --reload --port 8000
 ```
 
-# 🧩 4. Frontend (React + Tailwind Dashboard)
+API will be available at: `http://localhost:8000`
+
+### 🧩 5. Frontend (React + Tailwind Dashboard)
+
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-```bash
-#You’ll See:
+
+Dashboard will be available at: `http://localhost:5173`
+
+**You'll See:**
 - System status (active workers, job counts)
-- Tables for “All Jobs” and “Dead Letter Queue”
+- Tables for "All Jobs" and "Dead Letter Queue"
 - Buttons for Retry, Delete, and View Log
+
 ---
-```
-# 🧠 Architecture Overview
+
+## 🧠 Architecture Overview
+
+### Job States
 
 | State        | Description                      |
-| ------------ | -------------------------------- |
+|--------------|----------------------------------|
 | `pending`    | Waiting for worker               |
 | `processing` | Currently being executed         |
 | `completed`  | Executed successfully            |
 | `failed`     | Failed but retryable             |
 | `dead`       | Permanently failed, moved to DLQ |
-```
----
-```
-# 🔹 Components Interaction
 
+### Components Interaction
+
+```
 +--------------+        +--------------+        +--------------+
 |   CLI Tool   | --->   |  SQLite DB   | <---   |   FastAPI    |
 | (queuectl.py)|        |  (queue.db)  |        |   Backend    |
@@ -121,23 +140,25 @@ npm run dev
                             |  (Live Dashboard)    |
                             +----------------------+
 ```
+
 ---
-```
-# 🧪 Testing the System
+
+## 🧪 Testing the System
 
 | Scenario         | Expected Result                 |
-| ---------------- | ------------------------------- |
+|------------------|---------------------------------|
 | Enqueue + Worker | Job executed successfully       |
 | Failing Job      | Retries automatically (backoff) |
 | Exceed retries   | Moves to DLQ                    |
 | Retry DLQ        | Job requeued to pending         |
 | Delete job       | Removed from DB and UI          |
 | Log view         | Shows captured command output   |
-```
----
-```
-# 📊 Example CLI Output
 
+---
+
+## 📊 Example CLI Output
+
+```bash
 > python queuectl.py status
 Workers: 2
 pending     1
@@ -146,20 +167,49 @@ completed   3
 failed      0
 dead        1
 ```
-```
-# 🧰 Configuration
-python queuectl.py config set max-retries 3
-python queuectl.py config set backoff-base 2
-```
+
 ---
 
-# 🤝 Contribution
+## 🧰 Configuration
 
-Pull requests are welcome!
-For major changes, open an issue first to discuss what you’d like to change.
+```bash
+# Set maximum retry attempts
+python queuectl.py config set max-retries 3
 
-# 🧑‍💻 Author
-Aniruth S
-💼 Backend Developer | Blockchain Enthusiast
-📧 your-email@example.com
-🔗 GitHub Profile
+# Set exponential backoff base
+python queuectl.py config set backoff-base 2
+```
+
+---
+
+## 📝 API Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/jobs` | List all jobs |
+| GET | `/api/jobs/{job_id}` | Get job details |
+| POST | `/api/jobs` | Create new job |
+| DELETE | `/api/jobs/{job_id}` | Delete job |
+| GET | `/api/dlq` | List DLQ jobs |
+| POST | `/api/dlq/{job_id}/retry` | Retry DLQ job |
+| GET | `/api/logs/{job_id}` | Get job logs |
+| GET | `/api/status` | Get system status |
+
+---
+
+## 🤝 Contribution
+
+Pull requests are welcome!  
+For major changes, open an issue first to discuss what you'd like to change.
+
+---
+
+## 🧑‍💻 Author
+
+**Aniruth S**  
+💼 Backend Developer | Blockchain Enthusiast  
+📧 your-email@example.com  
+🔗 [GitHub Profile](https://github.com/error077-ux)
+
+---
+
